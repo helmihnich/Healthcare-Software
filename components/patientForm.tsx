@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import {Form} from "@/components/ui/form"
 import CustomFromField from "@/components/CustomFormField"
+import SubmitButton from "./submitButton"
+import { useState } from "react"
+import { UserFormValidation } from "@/lib/userFormValidation"
 
 export enum FromFieldType {
   INPUT = "input",
@@ -23,7 +26,7 @@ export enum FromFieldType {
   SLIDER = "slider",
   RANGE = "range",
   CURRENCY = "currency",
-  PHONE = "phone",
+  PHONE_INPUT = "phone",
   EMAIL = "email",
   URL = "url",
   PASSWORD = "password",
@@ -32,21 +35,23 @@ export enum FromFieldType {
   HIDDEN = "hidden",
 }
  
-const formSchema = z.object({
-  username: z.string().min(2).max(50),
-})
+
 
 
 function PatientForm() {
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
+  const [isLoading, setIsLoading] = useState(false)
+
+    const form = useForm<z.infer<typeof UserFormValidation>>({
+      resolver: zodResolver(UserFormValidation),
       defaultValues: {
-        username: "",
+        name: "",
+        email: "",
+        phone: "",
       },
     })
    
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    function onSubmit(values: z.infer<typeof UserFormValidation>) {
       console.log(values)
     }
   return (
@@ -66,8 +71,26 @@ function PatientForm() {
           iconSrc="/assets/icons/user.svg"
           iconAlt="User Icon"
         />
+        <CustomFromField 
+          formType = {FromFieldType.INPUT}
+          control={form.control} 
+          name="email"
+          label="Email"
+          placeholder="john.doe@email.com"
+          iconSrc="/assets/icons/email.svg"
+          iconAlt="email Icon"
+        />
+        <CustomFromField 
+          formType = {FromFieldType.PHONE_INPUT}
+          control={form.control} 
+          name="phone"
+          label="Phone number"
+          placeholder="(555) 555-5555"
+        />
 
-        <Button type="submit">Submit</Button>
+        <SubmitButton isLoading={isLoading}>
+          Get Started
+        </SubmitButton>
       </form>
     </Form>
   )
